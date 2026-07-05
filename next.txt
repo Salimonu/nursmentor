@@ -1,0 +1,2 @@
+
+- next make the navbar change based on whether the user is logged in or logged out.

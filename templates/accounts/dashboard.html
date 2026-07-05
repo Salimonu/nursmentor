@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+      <h2 class="mb-3">{{ role }} Dashboard</h2>
+      <p class="text-muted">You have been redirected based on your role.</p>
+      <a href="{% url 'logout' %}" class="btn btn-outline-secondary">Log out</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
