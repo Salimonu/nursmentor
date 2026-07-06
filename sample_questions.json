@@ -1,0 +1,32 @@
+[
+  {
+    "text": "What is the role of the lymphatic system?",
+    "category": "anatomy_and_physiology",
+    "option_a": "To pump blood throughout the body",
+    "option_b": "To digest food",
+    "option_c": "To transport lymph and maintain immune function",
+    "option_d": "To regulate body temperature",
+    "correct_option": "c",
+    "rationale": "The lymphatic system transports lymph fluid and plays a crucial role in immune function by producing and circulating white blood cells."
+  },
+  {
+    "text": "Which microorganism causes malaria?",
+    "category": "microbiology_and_parasitology",
+    "option_a": "Mosquito",
+    "option_b": "Plasmodium",
+    "option_c": "Virus",
+    "option_d": "Bacteria",
+    "correct_option": "b",
+    "rationale": "Malaria is caused by the protozoan parasite Plasmodium, transmitted by Anopheles mosquitoes."
+  },
+  {
+    "text": "What is the first step in the nursing process?",
+    "category": "fundamentals_of_nursing",
+    "option_a": "Planning",
+    "option_b": "Assessment",
+    "option_c": "Implementation",
+    "option_d": "Evaluation",
+    "correct_option": "b",
+    "rationale": "Assessment is the first step in the nursing process, where data is collected about the patient's health status."
+  }
+]

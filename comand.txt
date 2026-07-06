@@ -1,0 +1,11 @@
+# CSV import (auto-detected)
+python manage.py import_questions sample_questions.csv
+
+# JSON import (auto-detected)  
+python manage.py import_questions sample_questions.json
+
+# Force format
+python manage.py import_questions data.txt --format json
+
+# Clear before importing
+python manage.py import_questions questions.csv --clear

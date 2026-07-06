@@ -1,4 +1,7 @@
 .env
 .venv
 db.sqlite3
+
+# text files
+users.txt
 code.txt

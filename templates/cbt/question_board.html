@@ -1,0 +1,227 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="card shadow-lg">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">{{ category_display }}</h5>
+      <div class="badge bg-light text-dark">Question <span id="currentQuestion">1</span>/<span id="totalQuestions">{{ total_questions }}</span></div>
+    </div>
+    
+    <div class="card-body">
+      <!-- Question Progress -->
+      <div class="mb-4">
+        <div class="progress">
+          <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="{{ total_questions }}"></div>
+        </div>
+      </div>
+
+      <!-- Timer -->
+      <div class="alert alert-info mb-4">
+        <strong>Time Remaining:</strong> <span id="timer">30</span>s
+        <div class="progress mt-2">
+          <div class="progress-bar bg-warning" id="timerBar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </div>
+
+      <!-- Question -->
+      <div class="mb-4">
+        <h6 class="card-title" id="questionText"></h6>
+        <p class="text-muted" id="questionNumber"></p>
+      </div>
+
+      <!-- Answer Options -->
+      <div class="mb-4" id="optionsContainer">
+        <!-- Options will be rendered here by JavaScript -->
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="d-flex justify-content-between mt-5">
+        <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()">
+          <i class="fas fa-arrow-left"></i> Previous
+        </button>
+        <button class="btn btn-primary" id="submitBtn" onclick="submitTest()" style="display: none;">
+          <i class="fas fa-check"></i> Submit
+        </button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
+          Next <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const questions = {{ questions|safe }};
+  let currentQuestionIndex = 0;
+  let answers = {};
+  let timeRemaining = {{ time_per_question }};
+  let timerInterval;
+
+  // Initialize the first question
+  function init() {
+    displayQuestion();
+    startTimer();
+    updateProgressBar();
+  }
+
+  function displayQuestion() {
+    const q = questions[currentQuestionIndex];
+    document.getElementById('questionText').textContent = q.text;
+    document.getElementById('questionNumber').textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+    document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+
+    // Render options
+    const optionsContainer = document.getElementById('optionsContainer');
+    optionsContainer.innerHTML = '';
+    
+    const optionLabels = ['a', 'b', 'c', 'd'];
+    optionLabels.forEach(label => {
+      const optionDiv = document.createElement('div');
+      optionDiv.className = 'form-check mb-2';
+      
+      const selectedAnswer = answers[q.id] || '';
+      const isChecked = selectedAnswer === label;
+      
+      optionDiv.innerHTML = `
+        <input class="form-check-input option-input" type="radio" name="answer" 
+               id="option_${label}" value="${label}" data-question-id="${q.id}"
+               ${isChecked ? 'checked' : ''} onchange="saveAnswer('${q.id}', '${label}')">
+        <label class="form-check-label" for="option_${label}">
+          <strong>${label.toUpperCase()}.</strong> ${q.options[label]}
+        </label>
+      `;
+      optionsContainer.appendChild(optionDiv);
+    });
+
+    // Update button states
+    document.getElementById('prevBtn').disabled = currentQuestionIndex === 0;
+    document.getElementById('nextBtn').style.display = currentQuestionIndex === questions.length - 1 ? 'none' : 'inline-block';
+    document.getElementById('submitBtn').style.display = currentQuestionIndex === questions.length - 1 ? 'inline-block' : 'none';
+
+    // Reset timer
+    timeRemaining = {{ time_per_question }};
+    updateTimer();
+  }
+
+  function saveAnswer(questionId, answer) {
+    answers[questionId] = answer;
+  }
+
+  function nextQuestion() {
+    if (currentQuestionIndex < questions.length - 1) {
+      currentQuestionIndex++;
+      displayQuestion();
+      updateProgressBar();
+    }
+  }
+
+  function previousQuestion() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      displayQuestion();
+      updateProgressBar();
+    }
+  }
+
+  function updateProgressBar() {
+    const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+    document.getElementById('progressBar').style.width = progress + '%';
+    document.getElementById('progressBar').setAttribute('aria-valuenow', currentQuestionIndex + 1);
+  }
+
+  function startTimer() {
+    timerInterval = setInterval(updateTimer, 1000);
+  }
+
+  function updateTimer() {
+    timeRemaining--;
+    document.getElementById('timer').textContent = Math.max(0, timeRemaining);
+    
+    const timerPercentage = (timeRemaining / {{ time_per_question }}) * 100;
+    document.getElementById('timerBar').style.width = timerPercentage + '%';
+    
+    if (timeRemaining <= 0) {
+      clearInterval(timerInterval);
+      if (currentQuestionIndex < questions.length - 1) {
+        nextQuestion();
+        startTimer();
+      }
+    }
+  }
+
+  function submitTest() {
+    clearInterval(timerInterval);
+    
+    // Calculate score
+    let score = 0;
+    questions.forEach(q => {
+      if (answers[q.id] === q.correct_answer) {
+        score++;
+      }
+    });
+    
+    // Display results
+    const percentage = Math.round((score / questions.length) * 100);
+    
+    let resultHTML = `
+      <div class="alert alert-success">
+        <h4>Test Complete!</h4>
+        <p><strong>Score: ${score}/${questions.length} (${percentage}%)</strong></p>
+        <button class="btn btn-primary" onclick="location.href='{% url 'student_dashboard' %}'">Back to Dashboard</button>
+      </div>
+    `;
+    
+    // Show detailed results
+    resultHTML += '<h5>Review Answers:</h5>';
+    questions.forEach((q, index) => {
+      const userAnswer = answers[q.id];
+      const isCorrect = userAnswer === q.correct_answer;
+      const resultClass = isCorrect ? 'success' : 'danger';
+      
+      resultHTML += `
+        <div class="card mb-3 border-${resultClass}">
+          <div class="card-body">
+            <h6>${index + 1}. ${q.text}</h6>
+            <p><strong>Your answer:</strong> ${userAnswer ? userAnswer.toUpperCase() + '. ' + q.options[userAnswer] : 'Not answered'}</p>
+            <p><strong>Correct answer:</strong> ${q.correct_answer.toUpperCase()}. ${q.options[q.correct_answer]}</p>
+            ${q.rationale ? `<p><strong>Rationale:</strong> ${q.rationale}</p>` : ''}
+            <span class="badge bg-${resultClass}">${isCorrect ? 'Correct' : 'Incorrect'}</span>
+          </div>
+        </div>
+      `;
+    });
+    
+    document.querySelector('.card-body').innerHTML = resultHTML;
+  }
+
+  // Initialize on page load
+  init();
+</script>
+
+<style>
+  .form-check-label {
+    cursor: pointer;
+    margin-left: 0.5rem;
+  }
+
+  .form-check-input:checked + .form-check-label {
+    font-weight: 600;
+    color: #0d6efd;
+  }
+
+  .progress-bar {
+    transition: width 0.3s ease;
+  }
+
+  #timer {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+</style>
+{% endblock %}

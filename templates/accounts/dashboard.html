@@ -6,8 +6,119 @@
     <div class="card-body p-4">
       <h2 class="mb-3">{{ role }} Dashboard</h2>
       <p class="text-muted">You have been redirected based on your role.</p>
-      <a href="{% url 'logout' %}" class="btn btn-outline-secondary">Log out</a>
+      {% if user %}
+        {% if user.is_email_verified %}
+          <div class="alert alert-success d-inline-block mb-3" role="status">
+            <strong>Verified</strong> — your email address has been confirmed.
+          </div>
+        {% else %}
+          <form method="post" action="{% url 'request_email_verification' %}" class="d-inline-block mb-3">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Verify your email</button>
+          </form>
+          <p class="text-muted mb-3">Use the button above to resend the verification email if needed.</p>
+        {% endif %}
+      {% endif %}
+      
+      {% if user.role == 'student' %}
+      <hr class="my-4">
+      <h5 class="mb-3">CBT Assessments</h5>
+      <div class="d-flex gap-2 mb-3">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#cbtTestModal" title="Take a timed CBT test on selected categories">
+          <i class="fas fa-book"></i> CBT Test
+        </button>
+        <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#mockExamModal" title="Practice with full mock exam">
+          <i class="fas fa-file-alt"></i> Mock Exams
+        </button>
+      </div>
+      <p class="text-muted small">Subscription: <strong>{{ user.get_subscription_status_display }}</strong></p>
+      {% endif %}
+      
+      <div>
+        <a href="{% url 'logout' %}" class="btn btn-outline-secondary mt-4">Log out</a>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- CBT Test Modal -->
+<div class="modal fade" id="cbtTestModal" tabindex="-1" aria-labelledby="cbtTestLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cbtTestLabel">CBT Test</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if user.subscription_status == 'freemium' %}
+          <div class="alert alert-warning mb-3">
+            <strong>Premium Feature</strong><br>
+            This feature is available only for premium users.
+          </div>
+          <p>Upgrade your account to unlock CBT tests and access all question categories.</p>
+        {% else %}
+          <p>Select a category to start your CBT test:</p>
+          <div id="categoriesContainer" class="list-group">
+            <button type="button" class="list-group-item list-group-item-action" data-category="fundamentals_of_nursing">Fundamentals of Nursing</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="medical_surgical_nursing">Medical-Surgical Nursing</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="anatomy_and_physiology">Anatomy and Physiology</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="pharmacology">Pharmacology</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="microbiology_and_parasitology">Microbiology and Parasitology</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="community_health_nursing">Community Health Nursing</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="maternal_and_child_health">Maternal and Child Health</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="mental_health_psychiatric_nursing">Mental Health/Psychiatric Nursing</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="nutrition">Nutrition</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="nursing_research">Nursing Research</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="nursing_education_and_administration">Nursing Education and Administration</button>
+            <button type="button" class="list-group-item list-group-item-action" data-category="professional_ethics_and_jurisprudence">Professional Ethics and Jurisprudence</button>
+          </div>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        {% if user.subscription_status == 'freemium' %}
+          <button type="button" class="btn btn-warning">Upgrade Now</button>
+        {% endif %}
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mock Exams Modal -->
+<div class="modal fade" id="mockExamModal" tabindex="-1" aria-labelledby="mockExamLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="mockExamLabel">Mock Exams</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {% if user.subscription_status == 'freemium' %}
+          <div class="alert alert-warning mb-3">
+            <strong>Premium Feature</strong><br>
+            This feature is available only for premium users.
+          </div>
+          <p>Upgrade your account to access comprehensive mock exams.</p>
+        {% else %}
+          <p>Mock exams are coming soon!</p>
+        {% endif %}
+      </div>
+      <div class="modal-footer">
+        {% if user.subscription_status == 'freemium' %}
+          <button type="button" class="btn btn-warning">Upgrade Now</button>
+        {% endif %}
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('[data-category]').forEach(button => {
+  button.addEventListener('click', function() {
+    const category = this.dataset.category;
+    window.location.href = `{% url 'cbt_test' %}?category=${category}`;
+  });
+});
+</script>
 {% endblock %}

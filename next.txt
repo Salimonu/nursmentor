@@ -1,2 +1,14 @@
 
-- next make the navbar change based on whether the user is logged in or logged out.
+- add 2 buttons on students dashboard (cbt test, cbt mock exams)
+- the user clicks cbt test 
+- check if user is a freemium user
+- if freemium user: display a modal (texts: this feature is available only for premium users, button:upgrade now)
+- if premium user: display all categories of questions in a modal (button: select a category)
+- the user selects a category 
+- display questionboard (questions: 1-10,  timer: 30seconds per questions, buttons: next, previous, submit)
+- 
+
+
+
+
+- when you register a domain, pls, wire up SMTP with Resend server

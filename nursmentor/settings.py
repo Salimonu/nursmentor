@@ -8,18 +8,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 env = environ.Env(
     DEBUG=(bool, False)
 )
-environ.Env.read_env()
+environ.Env.read_env(BASE_DIR / ".env")
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env.get_value('SECRET_KEY')
+SECRET_KEY = env("SECRET_KEY")
+
+# SECRET_KEY = env.get_value('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.get_value('DEBUG')
-ALLOWED_HOSTS = env.get_value('ALLOWED_HOSTS')
+DEBUG = env.bool("DEBUG", default=False)
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
+# DEBUG = env.get_value('DEBUG')
+# ALLOWED_HOSTS = env.get_value('ALLOWED_HOSTS')
 
 
 # Application definition
@@ -38,7 +42,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'crispy_bootstrap5',
     'pwa',
-    'ckeditor',
+    'django_ckeditor_5',
 
     # default apps
     'django.contrib.admin',
@@ -150,3 +154,17 @@ MEDIA_ROOT = BASE_DIR / 'media'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Email configuration for password reset
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = env("EMAIL_HOST", default="")
+EMAIL_PORT = env.int("EMAIL_PORT", default=25)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=False)
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="noreply@nursmentor.local")
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+
+# Default host used in password reset emails
+SITE_DOMAIN = env("SITE_DOMAIN", default="127.0.0.1:8000")
+SITE_NAME = env("SITE_NAME", default="Nursmentor")
