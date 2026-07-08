@@ -18,7 +18,12 @@
 
       <!-- Timer -->
       <div class="alert alert-info mb-4">
-        <strong>Time Remaining:</strong> <span id="timer">30</span>s
+        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <span><strong>Time Remaining:</strong> <span id="timer">30</span>s</span>
+          {% if daily_limit %}
+            <span class="badge bg-primary">Daily Limit: {{ daily_limit }} questions</span>
+          {% endif %}
+        </div>
         <div class="progress mt-2">
           <div class="progress-bar bg-warning" id="timerBar" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
         </div>

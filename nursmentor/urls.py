@@ -15,7 +15,9 @@ from accounts.views import (
     logout_view,
     request_email_verification,
     student_dashboard,
+    subscription_page,
     teacher_dashboard,
+    upgrade_subscription,
     verify_email,
 )
 from cbt.views import cbt_test
@@ -32,6 +34,8 @@ urlpatterns = [
     path('reset/<uidb64>/<token>/', CustomPasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('reset/done/', CustomPasswordResetCompleteView.as_view(), name='password_reset_complete'),
     path('student-dashboard/', student_dashboard, name='student_dashboard'),
+    path('subscription/', subscription_page, name='subscription_page'),
+    path('upgrade-subscription/<str:plan>/', upgrade_subscription, name='upgrade_subscription'),
     path('teacher-dashboard/', teacher_dashboard, name='teacher_dashboard'),
     path('cbt-test/', cbt_test, name='cbt_test'),
     path('', home, name='home'),

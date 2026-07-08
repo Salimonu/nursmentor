@@ -10,8 +10,10 @@ from django.contrib.auth.views import (
     PasswordResetView,
 )
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 from django.urls import reverse, reverse_lazy
+from django.views.decorators.http import require_POST
 from django.views.generic import CreateView
 
 from .models import User
@@ -120,6 +122,23 @@ def verify_email(request, token):
 
 def student_dashboard(request):
     return render(request, 'accounts/dashboard.html', {'role': 'Student', 'user': request.user})
+
+
+@login_required
+def subscription_page(request):
+    return render(request, 'accounts/subscription.html', {'user': request.user})
+
+
+@login_required
+@require_POST
+def upgrade_subscription(request, plan):
+    if plan not in dict(User.PLAN_CHOICES):
+        return redirect('subscription_page')
+
+    request.user.subscription_status = 'premium'
+    request.user.subscription_plan = plan
+    request.user.save(update_fields=['subscription_status', 'subscription_plan'])
+    return redirect('student_dashboard')
 
 
 def teacher_dashboard(request):

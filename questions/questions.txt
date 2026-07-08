@@ -1,0 +1,7 @@
+generate 20 scenario-based NCLEX-STYLE questions (difficulty: easy) on MEDICAL-SURGICAL NURSING with options, correct_option and rationale 
+
+csv format, no double quote
+
+format:
+text,category,option_a,option_b,option_c,option_d,correct_option,rationale 
+What is the primary goal of nursing care?,fundamentals_of_nursing,Provide comfort,Promote health and prevent illness,Administer medications,Perform surgeries,b,The primary goal of nursing is to promote health and prevent illness.

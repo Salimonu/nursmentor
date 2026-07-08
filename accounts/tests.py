@@ -3,6 +3,8 @@ from django.core import mail
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+from cbt.models import Option, Question
+
 
 class CustomUserModelTests(TestCase):
     def test_create_user_with_role(self):
@@ -118,3 +120,37 @@ class CustomUserModelTests(TestCase):
         self.assertRedirects(response, reverse('student_dashboard'))
         self.assertEqual(len(mail.outbox), 1)
         self.assertIn('Verify your email', mail.outbox[0].subject)
+
+    def test_freemium_user_is_redirected_to_subscription_page_for_mock_exam(self):
+        User = get_user_model()
+        user = User.objects.create_user(username='student5', email='student5@example.com', password='password123', role='student')
+        self.client.force_login(user)
+
+        response = self.client.get(reverse('cbt_test'), {'mode': 'mock'})
+
+        self.assertRedirects(response, reverse('subscription_page'))
+
+    def test_premium_user_can_access_mock_exam_with_plan_limit(self):
+        User = get_user_model()
+        user = User.objects.create_user(username='student6', email='student6@example.com', password='password123', role='student')
+        user.subscription_status = 'premium'
+        user.subscription_plan = 'basic'
+        user.save(update_fields=['subscription_status', 'subscription_plan'])
+        self.client.force_login(user)
+
+        question = Question.objects.create(text='What is nursing?', category=Question.Category.FUNDAMENTALS_OF_NURSING)
+        Option.objects.create(
+            question=question,
+            option_a='A',
+            option_b='B',
+            option_c='C',
+            option_d='D',
+            correct_option='a',
+            rationale='Because it is correct.',
+        )
+
+        response = self.client.get(reverse('cbt_test'), {'mode': 'mock'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Daily Limit')
+        self.assertContains(response, '50')

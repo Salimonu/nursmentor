@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-6 fw-bold">Unlock Premium Access</h1>
+    <p class="lead text-muted">Practice every day with real CBT-style nursing questions, track your progress, and increase your chances of passing on your first attempt.</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card h-100 border-success shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title">Basic Plan</h4>
+          <p class="text-muted">Start your success journey.</p>
+          <h2 class="display-6 fw-bold">₦1,000<span class="fs-6">/month</span></h2>
+          <ul class="list-unstyled mt-3">
+            <li>✓ 50 CBT mock questions every day</li>
+            <li>✓ Full nursing exam syllabus</li>
+            <li>✓ Detailed performance tracking</li>
+            <li>✓ Exam timer enabled</li>
+            <li>✓ Answers with rationale</li>
+            <li>✓ Access for 1 month</li>
+          </ul>
+          <form method="post" action="{% url 'upgrade_subscription' 'basic' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-success w-100 mt-3">Upgrade Now</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 border-primary shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title">Standard Plan</h4>
+          <p class="text-muted">Practice more and score higher.</p>
+          <h2 class="display-6 fw-bold">₦2,000<span class="fs-6">/month</span></h2>
+          <ul class="list-unstyled mt-3">
+            <li>✓ Everything in Basic</li>
+            <li>✓ 100 CBT mock questions every day</li>
+            <li>✓ Detailed performance tracking</li>
+            <li>✓ Exam timer enabled</li>
+            <li>✓ Answers with rationale</li>
+            <li>✓ Access for 1 month</li>
+          </ul>
+          <form method="post" action="{% url 'upgrade_subscription' 'standard' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary w-100 mt-3">Go Premium</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card h-100 border-danger shadow-sm">
+        <div class="card-body">
+          <h4 class="card-title">Pro Plan</h4>
+          <p class="text-muted">Maximum practice for maximum success.</p>
+          <h2 class="display-6 fw-bold">₦2,500<span class="fs-6">/month</span></h2>
+          <ul class="list-unstyled mt-3">
+            <li>✓ Everything in Standard</li>
+            <li>✓ 150 CBT mock questions every day</li>
+            <li>✓ Complete nursing exam coverage</li>
+            <li>✓ Timed practice sessions</li>
+            <li>✓ Advanced analytics and progress tracking</li>
+            <li>✓ Access for 1 month</li>
+          </ul>
+          <form method="post" action="{% url 'upgrade_subscription' 'pro' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger w-100 mt-3">Start Winning Today</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 text-center">
+    <a href="{% url 'student_dashboard' %}" class="btn btn-outline-secondary">Back to Dashboard</a>
+  </div>
+</div>
+{% endblock %}

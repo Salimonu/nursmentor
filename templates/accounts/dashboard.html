@@ -31,7 +31,7 @@
           <i class="fas fa-file-alt"></i> Mock Exams
         </button>
       </div>
-      <p class="text-muted small">Subscription: <strong>{{ user.get_subscription_status_display }}</strong></p>
+      <p class="text-muted small">Subscription: <strong>{{ user.get_subscription_status_display }}</strong>{% if user.subscription_plan %} · {{ user.get_subscription_plan_display }}{% endif %}</p>
       {% endif %}
       
       <div>
@@ -100,12 +100,16 @@
           </div>
           <p>Upgrade your account to access comprehensive mock exams.</p>
         {% else %}
-          <p>Mock exams are coming soon!</p>
+          <div class="alert alert-info mb-3">
+            <strong>Current Plan:</strong> {{ user.get_subscription_plan_display }}
+          </div>
+          <p>Start a timed mock exam with your daily question limit.</p>
+          <a href="{% url 'cbt_test' %}?mode=mock" class="btn btn-info w-100">Start Mock Exam</a>
         {% endif %}
       </div>
       <div class="modal-footer">
         {% if user.subscription_status == 'freemium' %}
-          <button type="button" class="btn btn-warning">Upgrade Now</button>
+          <a href="{% url 'subscription_page' %}" class="btn btn-warning">Upgrade Now</a>
         {% endif %}
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
       </div>
@@ -120,5 +124,12 @@ document.querySelectorAll('[data-category]').forEach(button => {
     window.location.href = `{% url 'cbt_test' %}?category=${category}`;
   });
 });
+
+const mockExamButton = document.querySelector('#mockExamModal .btn-warning');
+if (mockExamButton) {
+  mockExamButton.addEventListener('click', function() {
+    window.location.href = `{% url 'subscription_page' %}`;
+  });
+}
 </script>
 {% endblock %}
